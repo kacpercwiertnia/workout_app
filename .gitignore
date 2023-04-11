@@ -1,0 +1,8 @@
+workout_app/.venv
+workout_app/workout_app/settings.py
+workout_app/workout_app/__init__.py
+workout_app/workout_app/__pycache__
+workout_app/api/__pycache__
+workout_app/api/__init__.py
+workout_app/api/migrations/__pycache__
+workout_app/api/migrations/__init__.py
