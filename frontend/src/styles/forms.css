@@ -1,0 +1,9 @@
+.error {
+    border: 2px solid #FF6565 !important 
+}
+
+.error-message {
+    color: #FF6565;
+    padding: 0px 0px 10px 0px;
+    font-size: 0.9em;
+}

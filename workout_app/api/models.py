@@ -62,10 +62,10 @@ class Exercises(models.Model):
 
 class Users(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField(validators=[validate_age])
-    height = models.IntegerField(validators=[validate_height])
-    weight = models.IntegerField(validators=[validate_weight])
-    experience = models.CharField(max_length=1, validators=[validate_difficulty])
+    age = models.IntegerField(null=True, validators=[validate_age])
+    height = models.IntegerField(null=True, validators=[validate_height])
+    weight = models.IntegerField(null=True, validators=[validate_weight])
+    experience = models.CharField(null=True, max_length=1, validators=[validate_difficulty])
 
     def __str__(self):
         return self.user.username
