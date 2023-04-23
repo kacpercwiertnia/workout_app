@@ -22,7 +22,7 @@ const validationSchema = Yup.object().shape({
 
 const UserPage = () => {
     let [userData, setUserData] = useState({});
-    let {authTokens} = useContext(AuthContext)
+    let {authTokens, setUserInfo} = useContext(AuthContext)
 
     useEffect(() => {
         getUserData()
@@ -37,11 +37,8 @@ const UserPage = () => {
             }
         })
         let data = await response.json()
-        console.log(data)
         setUserData(data)
     }
-
-    
 
     return (
         <div className='container mt-3'>
@@ -53,6 +50,7 @@ const UserPage = () => {
                 onSubmit={(values, {setSubmitting, resetForm}) => {
                     setSubmitting(true);
                     resetForm();
+                    setUserInfo(userData.id, values);
                     setSubmitting(false);
                 }}>
                 {( {values,
@@ -111,7 +109,6 @@ const UserPage = () => {
                             <div className="error-message">{errors.weight}</div>
                             ): null}
                         </div>
-                        {values.experience ? (
                         <div className='mb-3'>
                             <label htmlFor="experience" className="form-label">Poziom doświadczenia</label>
                             <select
@@ -129,7 +126,6 @@ const UserPage = () => {
                             <div className="error-message">{errors.experience}</div>
                             ): null}
                         </div>
-                        ) : null }
                         <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Zatwierdź</button>
                     </form>
                 )}

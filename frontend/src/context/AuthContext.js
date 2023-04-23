@@ -63,6 +63,26 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    let setUserInfo = async(id, values) => {
+        let respone = await fetch(`http://localhost:8000/api/user/${id}/`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                'id': id,
+                'age': values.age,
+                'height': values.height,
+                'weight': values.weight,
+                'experience': values.experience,
+            })
+        })
+
+        if(respone.status === 400){
+            alert('Failed to change data')
+        }
+    }
+
     let updateToken = async () => {
         let response = await fetch('http://localhost:8000/api/token/refresh/', {
             method: 'POST',
@@ -87,6 +107,7 @@ export const AuthProvider = ({children}) => {
         loginUser:loginUser,
         logoutUser:logoutUser,
         registerUser:registerUser,
+        setUserInfo:setUserInfo,
         authTokens:authTokens
     }
 

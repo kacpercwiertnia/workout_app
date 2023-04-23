@@ -14,5 +14,7 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='auth_register'),
     path('muscles/', views.getMuscles, name="muscles"),
     path('user/', views.getUserProfile, name="user"),
-    path('user/update/', views.UpdateUserView.as_view(), name="user_update"),
+    path('user/gyms/', views.getUserGyms, name="user_gyms"),
+    path('user/workouts/', views.getUserWorkouts, name="user_gyms"),
+    path('user/<int:pk>/', views.UpdateUserView, name="user_update"),
 ]

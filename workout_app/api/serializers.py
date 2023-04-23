@@ -1,7 +1,10 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import ValidationError
 from django.contrib.auth.models import User
 from .models import Users
+from .models import Gyms
+from .models import Workouts
 from .models import Muscles
 
 class MusclesSerializer(ModelSerializer):
@@ -41,22 +44,29 @@ class RegisterSerializer(ModelSerializer):
 class UpdateUserSerializer(ModelSerializer):
     class Meta:
         model = Users
-        fields = ('age', 'height', 'weight', 'experience', 'user')
+        fields = ('id', 'age', 'height', 'weight', 'experience')
     
     def update(self, instance, validated_data):
-        user_to_update = Users.objects.get(user = 'user')
-        print('age')
+        instance.age = validated_data.get('age', instance.age)
+        instance.height = validated_data.get('height', instance.height)
+        instance.weight = validated_data.get('weight', instance.weight)
+        instance.experience = validated_data.get('experience', instance.experience)
 
-        #user_to_update.age = 'age'
-        #user_to_update.height = 'height'
-        #user_to_update.weight = 'weight'
-        #user_to_update.experience = 'experience'
+        instance.save()
 
-        #user_to_update.save()
-
-        #return user_to_update
+        return instance
 
 class UserProfileSerializer(ModelSerializer):
     class Meta:
         model = Users
+        fields = '__all__'
+
+class UserGymSerializer(ModelSerializer):
+    class Meta:
+        model = Gyms
+        fields = '__all__'
+
+class UserWorkoutSerializer(ModelSerializer):
+    class Meta:
+        model = Workouts
         fields = '__all__'

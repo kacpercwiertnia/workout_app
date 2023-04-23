@@ -2,13 +2,17 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import Muscles
-from .serializers import MusclesSerializer, RegisterSerializer, UserProfileSerializer, UpdateUserSerializer
+from .serializers import MusclesSerializer, RegisterSerializer, UserProfileSerializer, UpdateUserSerializer, UserGymSerializer, UserWorkoutSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from django.contrib.auth.models import User
 from .models import Users
+from .models import Gyms
+from .models import Workouts
 from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -31,10 +35,20 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
-class UpdateUserView(generics.CreateAPIView):
-    user_set = Users.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UpdateUserSerializer
+def UpdateUserView(request, pk):
+    try:
+        user = Users.objects.get(pk=pk)
+    except Users.DoesNotExist:
+        return Response(status=404)
+    
+    data = JSONParser().parse(request)
+    serializer = UserProfileSerializer(user, data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -53,4 +67,22 @@ def getUserProfile(request):
     user = User.objects.get(username = request.user)
     user_data = Users.objects.get(user = user)
     serializer = UserProfileSerializer(user_data)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserGyms(request):
+    user = User.objects.get(username = request.user)
+    user_data = Users.objects.get(user = user)
+    user_gyms = Gyms.objects.filter(user_id=user_data.id)
+    serializer = UserGymSerializer(user_gyms, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserWorkouts(request):
+    user = User.objects.get(username = request.user)
+    user_data = Users.objects.get(user = user)
+    user_workouts = Workouts.objects.filter(user_id=user_data.id)
+    serializer = UserWorkoutSerializer(user_workouts, many=True)
     return Response(serializer.data)
