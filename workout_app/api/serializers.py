@@ -6,10 +6,16 @@ from .models import Users
 from .models import Gyms
 from .models import Workouts
 from .models import Muscles
+from .models import Equipments
 
 class MusclesSerializer(ModelSerializer):
     class Meta:
         model = Muscles
+        fields = '__all__'
+
+class EquipmentsSerializer(ModelSerializer):
+    class Meta:
+        model = Equipments
         fields = '__all__'
 
 class RegisterSerializer(ModelSerializer):
@@ -44,17 +50,8 @@ class RegisterSerializer(ModelSerializer):
 class UpdateUserSerializer(ModelSerializer):
     class Meta:
         model = Users
-        fields = ('id', 'age', 'height', 'weight', 'experience')
+        fields = ('age', 'height', 'weight', 'experience')
     
-    def update(self, instance, validated_data):
-        instance.age = validated_data.get('age', instance.age)
-        instance.height = validated_data.get('height', instance.height)
-        instance.weight = validated_data.get('weight', instance.weight)
-        instance.experience = validated_data.get('experience', instance.experience)
-
-        instance.save()
-
-        return instance
 
 class UserProfileSerializer(ModelSerializer):
     class Meta:

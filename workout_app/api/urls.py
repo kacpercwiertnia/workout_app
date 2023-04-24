@@ -15,6 +15,8 @@ urlpatterns = [
     path('muscles/', views.getMuscles, name="muscles"),
     path('user/', views.getUserProfile, name="user"),
     path('user/gyms/', views.getUserGyms, name="user_gyms"),
+    path('user/gyms/create/', views.CreateUserGyms, name="user_gyms_info"),
+    path('user/gyms/equipments/', views.getEquipments, name="user_gym_equipments"),
     path('user/workouts/', views.getUserWorkouts, name="user_gyms"),
     path('user/<int:pk>/', views.UpdateUserView, name="user_update"),
 ]

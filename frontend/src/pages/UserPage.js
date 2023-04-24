@@ -52,6 +52,7 @@ const UserPage = () => {
                     resetForm();
                     setUserInfo(userData.id, values);
                     setSubmitting(false);
+                    getUserData();
                 }}>
                 {( {values,
                     errors,
@@ -66,7 +67,7 @@ const UserPage = () => {
                             <input
                                 type="text"
                                 name="age"
-                                placeholder="Wiek"
+                                placeholder={`${userData.age == null ? "Wiek" : userData.age}`}
                                 id="age"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -82,7 +83,7 @@ const UserPage = () => {
                             <input
                                 type="text"
                                 name="height"
-                                placeholder="Wzrost"
+                                placeholder={`${userData.height == null ? "Wzrost" : userData.height}`}
                                 id="height"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -98,7 +99,7 @@ const UserPage = () => {
                             <input
                                 type="text"
                                 name="weight"
-                                placeholder="Waga"
+                                placeholder={`${userData.weight == null ? "Waga" : userData.weight}`}
                                 id="weight"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -116,11 +117,12 @@ const UserPage = () => {
                                 id="experience"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                value={values.experience}
+                                value={userData.experience}
                                 className={`form-select ${touched.experience && errors.experience ? "error" : null}`}>
-                                    <option value={'B'}>Początkujący</option>
-                                    <option value={'I'}>Średniozaawansowany</option>
-                                    <option value={'A'}>Zaawansowany</option>
+                                    <option value={'null'} selected disabled>Wybierz poziom zaawansowania</option>
+                                    <option value={'B'} >Początkujący</option>
+                                    <option value={'I'} >Średniozaawansowany</option>
+                                    <option value={'A'} >Zaawansowany</option>
                             </select>
                             {touched.experience && errors.experience ? (
                             <div className="error-message">{errors.experience}</div>

@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import AuthRoute from './utils/AuthRoute';
+import FormRoute from './utils/FormRoute';
 import UnauthRoute from './utils/UnauthRoute';
 import { AuthProvider } from './context/AuthContext'
 import UserPage from './pages/UserPage';
@@ -19,13 +20,13 @@ function App() {
         <NavbarComponent/>
         <Routes>
           <Route path='/' exact element={<HomePage/>}/>
-          <Route path='/gyms' element={<AuthRoute/>}>
+          <Route path='/gyms' element={<FormRoute/>}>
             <Route path='/gyms' element={<UserGymListPage/>}/>
           </Route>
-          <Route path='/gyms/:id' element={<AuthRoute/>}>
+          <Route path='/gyms/:id' element={<FormRoute/>}>
             <Route path='/gyms/:id' element={<UserGymPage />}/>
           </Route>
-          <Route path='/workouts' element={<AuthRoute/>}>
+          <Route path='/workouts' element={<FormRoute/>}>
             <Route path='/workouts' element={<UserWorkoutListPage/>}/>
           </Route>
           <Route path='/login' element={<UnauthRoute/>}>

@@ -15,7 +15,7 @@ const validationSchema = Yup.object().shape({
 
 const UserGymListPage = () => {
     let [userGyms, setUserGyms] = useState([]);
-    let {authTokens} = useContext(AuthContext)
+    let {authTokens, user} = useContext(AuthContext)
 
     useEffect(() => {
         getUserGymsData()
@@ -31,6 +31,23 @@ const UserGymListPage = () => {
         })
         let data = await response.json()
         setUserGyms(data)
+    }
+
+    let createGymData = async(values) => {
+        let response = await fetch(`http://localhost:8000/api/user/gyms/create/`,{
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                'gym_name': values.name,
+                'address': values.address,
+                'user_id': user.user_id,
+                'is_shared': false
+            })
+        })
+        let data = await response.json()
+        console.log(data)
     }
 
     return (
@@ -55,6 +72,7 @@ const UserGymListPage = () => {
                     onSubmit={(values, {setSubmitting, resetForm}) => {
                         setSubmitting(true);
                         resetForm();
+                        createGymData(values);
                         setSubmitting(false);
                     }}>
                     {( {values,
@@ -97,7 +115,7 @@ const UserGymListPage = () => {
                                 <div className="error-message">{errors.address}</div>
                                 ): null}
                             </div>
-                            <button className="btn btn-primary" type="submit" disabled={isSubmitting}>Dodaj</button>
+                            <button className="btn btn-primary" type="submit" disabled={isSubmitting} >Dodaj</button>
                         </form>
                     )}
                     </Formik>

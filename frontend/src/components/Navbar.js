@@ -4,7 +4,7 @@ import AuthContext from '../context/AuthContext';
 
 const NavbarComponent = () => {
     const navigate = useNavigate();
-    let {user, logoutUser} = useContext(AuthContext)
+    let {user, logoutUser, getFormUserData} = useContext(AuthContext)
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -14,7 +14,7 @@ const NavbarComponent = () => {
             <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            {user ? (
+            {(user && getFormUserData) ? (
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                     <li className="nav-item" role="button">
                         <NavLink activeClassName="active" exact className="nav-link" to='/'>Home</NavLink>
