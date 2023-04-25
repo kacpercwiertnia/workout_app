@@ -81,6 +81,8 @@ class Gyms(models.Model):
 
 class Workouts(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    muscle_id = models.ForeignKey(Muscles, on_delete=models.CASCADE, null=True)
+    gym_id = models.ForeignKey(Gyms, on_delete=models.CASCADE, null=True)
     date = models.DateField()
 
 class Gym_details(models.Model):

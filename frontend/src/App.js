@@ -12,6 +12,7 @@ import UserPage from './pages/UserPage';
 import UserGymListPage from './pages/UserGymListPage';
 import UserWorkoutListPage from './pages/UserWorkoutListPage';
 import UserGymPage from './pages/UserGymPage';
+import UserWorkoutPage from './pages/UserWorkoutPage';
 
 function App() {
   return (
@@ -28,6 +29,9 @@ function App() {
           </Route>
           <Route path='/workouts' element={<FormRoute/>}>
             <Route path='/workouts' element={<UserWorkoutListPage/>}/>
+          </Route>
+          <Route path='/workouts/:id' element={<FormRoute/>}>
+            <Route path='/workouts/:id' element={<UserWorkoutPage />}/>
           </Route>
           <Route path='/login' element={<UnauthRoute/>}>
             <Route path='/login' element={<LoginPage/>}/>

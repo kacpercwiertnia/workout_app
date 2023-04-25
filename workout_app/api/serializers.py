@@ -7,6 +7,7 @@ from .models import Gyms
 from .models import Workouts
 from .models import Muscles
 from .models import Equipments
+from .models import Gym_details
 
 class MusclesSerializer(ModelSerializer):
     class Meta:
@@ -66,4 +67,9 @@ class UserGymSerializer(ModelSerializer):
 class UserWorkoutSerializer(ModelSerializer):
     class Meta:
         model = Workouts
+        fields = '__all__'
+
+class GymEqupiment(ModelSerializer):
+    class Meta:
+        model = Gym_details
         fields = '__all__'

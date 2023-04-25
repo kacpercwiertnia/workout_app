@@ -4,18 +4,20 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import '../styles/forms.css';
 
-const numberValidation = /^[1-9]\d*$/
+const ageValidation = /^(1[5-9]|[2-9][0-9]|100)$/
+const heightValidation = /^(10[0-9]|1[1-9][0-9]|2[0-5][0-9]|260)$/
+const weightValidation = /^(4[0-9]|[5-9][0-9]|1[0-9]{2}|200)$/
 
 const validationSchema = Yup.object().shape({
     age: Yup.string()
     .required("Wiek jest wymagany.")
-    .matches(numberValidation, "Wiek musi być liczbą"),
+    .matches(ageValidation, "Wiek musi być liczbą od 15 do 100"),
     height: Yup.string()
     .required("Wzrost jest wymagany.")
-    .matches(numberValidation, "Wzrost musi być liczbą"),
+    .matches(heightValidation, "Wzrost musi być liczbą od 100 do 260"),
     weight: Yup.string()
     .required("Waga jest wymagana.")
-    .matches(numberValidation, "Wzrost musi być liczbą"),
+    .matches(weightValidation, "Wzrost musi być liczbą od 40 do 200"),
     experience: Yup.string()
     .required("Poziom doświadczenia jest wymagany.")
   });
@@ -117,9 +119,9 @@ const UserPage = () => {
                                 id="experience"
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                value={userData.experience}
+                                value={values.experience}
                                 className={`form-select ${touched.experience && errors.experience ? "error" : null}`}>
-                                    <option value={'null'} selected disabled>Wybierz poziom zaawansowania</option>
+                                    <option value={''} selected disabled>Wybierz poziom zaawansowania</option>
                                     <option value={'B'} >Początkujący</option>
                                     <option value={'I'} >Średniozaawansowany</option>
                                     <option value={'A'} >Zaawansowany</option>

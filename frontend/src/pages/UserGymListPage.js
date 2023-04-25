@@ -55,14 +55,16 @@ const UserGymListPage = () => {
             <div className="row">
                 <div className="col-12 col-md-6 text-center">
                     <p className="h1">Twoje siłownie</p>
+                    <div className="row">
                     {userGyms.map((gym, index) => (
-                    <NavLink to={'/gyms/'+gym.id} className="nav-link">
                         <div key={index} className="text-center col-12 col-sm-6 col-md-4 my-2 py-3 bg-light border">
+                        <NavLink to={'/gyms/'+gym.id} className="nav-link">
                             <p className="h3">{gym.gym_name}</p>
                             <p className="h6">{gym.address}</p>
+                        </NavLink>
                         </div>
-                    </NavLink>
                     ))}
+                    </div>
                 </div>
                 <div className="col-12 col-md-6">
                 <p className="h1 text-center">Dodaj nową siłownie</p>

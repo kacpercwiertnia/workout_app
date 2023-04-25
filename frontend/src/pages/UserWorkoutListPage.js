@@ -1,5 +1,6 @@
 import {React, useState, useEffect, useContext} from "react";
 import AuthContext from "../context/AuthContext";
+import { useNavigate, NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import '../styles/forms.css';
@@ -21,7 +22,6 @@ const UserWorkoutListPage = () => {
     let [muscles, setMuscles] = useState([]);
     let [userGyms, setUserGyms] = useState([]);
 
-
     useEffect(() => {
         getUserWorkoutData()
         getMuscles()
@@ -37,6 +37,7 @@ const UserWorkoutListPage = () => {
             }
         })
         let data = await response.json()
+        data.sort((a,b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
         setUserWorkouts(data)
     }
 
@@ -59,16 +60,39 @@ const UserWorkoutListPage = () => {
         setUserGyms(data)
     }
 
+    let createWorkout = async(values) => {
+        let response = await fetch(`http://localhost:8000/api/user/workouts/create/`,{
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': 'Bearer ' + String(authTokens.access)
+            },
+            body: JSON.stringify({
+                'muscle_id': values.muscle,
+                'gym_id': values.gym,
+                'date': values.date
+            })
+        })
+        let data = await response.json()
+        alert(data);
+    }
+
     return (
         <div className="container-fluid mt-3">
             <div className="row">
                 <div className="col-12 col-md-6 text-center">
                     <p className="h1">Twoje zaplanowane treningi</p>
+                    <div className="row">
                     {userWorkouts.map((workout, index) => (
                     <div key={index} className="text-center col-12 col-sm-6 col-md-4 my-2 py-3 bg-light border">
-                        <p className="h3">{workout.date}</p>
+                        <NavLink to={'/workouts/'+workout.id} className="nav-link">
+                        <p className="h2">{workout.muscle}</p>
+                        <p className="h4">{workout.gym}</p>
+                        <p>{workout.date}</p>
+                        </NavLink>
                     </div>
                     ))}
+                    </div>
                 </div>
                 <div className="col-12 col-md-6">
                 <p className="h1 text-center">Zaplanuj nowy trening</p>
@@ -78,6 +102,7 @@ const UserWorkoutListPage = () => {
                     onSubmit={(values, {setSubmitting, resetForm}) => {
                         setSubmitting(true);
                         resetForm();
+                        createWorkout(values)
                         setSubmitting(false);
                     }}>
                     {( {values,

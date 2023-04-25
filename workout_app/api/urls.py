@@ -15,8 +15,13 @@ urlpatterns = [
     path('muscles/', views.getMuscles, name="muscles"),
     path('user/', views.getUserProfile, name="user"),
     path('user/gyms/', views.getUserGyms, name="user_gyms"),
+    path('user/gyms/<int:pk>/', views.getUserGym, name="user_gym"),
+    path('user/gyms/<int:pk>/update/', views.UpdateUserGym, name="user_gym_update"),
     path('user/gyms/create/', views.CreateUserGyms, name="user_gyms_info"),
     path('user/gyms/equipments/', views.getEquipments, name="user_gym_equipments"),
+    path('user/gyms/<int:pk>/equipments/', views.getGymEqupiments, name="gym_equipments"),
     path('user/workouts/', views.getUserWorkouts, name="user_gyms"),
+    path('user/workouts/<int:pk>/', views.getUserWorkout, name="user_workout"),
+    path('user/workouts/create/', views.CreateUserWorkout, name="user_workout_create"),
     path('user/<int:pk>/', views.UpdateUserView, name="user_update"),
 ]
