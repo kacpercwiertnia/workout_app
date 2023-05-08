@@ -179,13 +179,42 @@ def CreateUserGyms(request):
 
     return Response(serializer.data)
 
+@api_view(['PUT'])
+def ShareGym(request, pk):
+  data = request.data
+  gym = Gyms.objects.get(id=pk)
+  gym.is_shared = data['is_shared']
+  gym.save()
+  serializer = UserGymSerializer(gym, many=False)
+  return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def GetSharedGyms(request):
+    shared_gyms = Gyms.objects.filter(is_shared=True)
+    public_gyms = []
+    for el in shared_gyms.values():
+        public_gyms.append({'id': el['id'], 'name': el['gym_name'], 'addres': el['address']})
+    return Response(public_gyms)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getPublicGymEqupiments(request, pk):
+    gym = Gyms.objects.get(id = pk)
+    equipments = Gym_details.objects.filter(gym_id = gym)
+    serializer = GymEqupiment(equipments, many=True)
+    public_gym_equipments = []
+    for el in serializer.data:
+        equipment = Equipments.objects.get(id = el['equipment_id']).equipment_name
+        public_gym_equipments.append({'id': el['equipment_id'], 'eq_name': equipment})
+    return Response(public_gym_equipments)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def CreateUserWorkout(request):
     user = User.objects.get(username = request.user)
     user_data = Users.objects.get(user = user)
     user_exp = user_data.experience
-    print(user_exp)
     data = request.data
     muscle = Muscles.objects.get(id = data['muscle_id'])
     gym = Gyms.objects.get(id = data['gym_id'])
@@ -199,7 +228,7 @@ def CreateUserWorkout(request):
                 exer = Exercises.objects.get(id = el2['id'])
                 desc = el2['description']
                 potential_workout.append({'exercise_id': exer, 'description': desc})
-
+    print(len(potential_workout))
     if len(potential_workout) < 3:
         return Response("Nie udało się utworzyć treningu przy podanej specyfikacji!")
 
@@ -207,7 +236,7 @@ def CreateUserWorkout(request):
     i = 0
     
     for el in potential_workout:
-        if i == 8:
+        if i == 5:
             break
         Workout_details.objects.create(workout_id = new_workout, exercise_id = el['exercise_id'], description = el['description'])
         i+=1

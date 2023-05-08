@@ -13,6 +13,8 @@ import UserGymListPage from './pages/UserGymListPage';
 import UserWorkoutListPage from './pages/UserWorkoutListPage';
 import UserGymPage from './pages/UserGymPage';
 import UserWorkoutPage from './pages/UserWorkoutPage';
+import PublicGyms from './pages/PublicGyms';
+import PublicGymPage from './pages/PublicGymPage';
 
 function App() {
   return (
@@ -23,7 +25,10 @@ function App() {
           <Route path='/' exact element={<HomePage/>}/>
           <Route path='/gyms' element={<FormRoute/>}>
             <Route path='/gyms' element={<UserGymListPage/>}/>
+            <Route path='/gyms/shared' element={<PublicGyms />} />
+            <Route path='/gyms/shared/:id' element={<PublicGymPage />} />
           </Route>
+
           <Route path='/gyms/:id' element={<FormRoute/>}>
             <Route path='/gyms/:id' element={<UserGymPage />}/>
           </Route>

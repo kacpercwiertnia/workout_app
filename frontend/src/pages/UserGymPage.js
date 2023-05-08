@@ -11,6 +11,7 @@ const UserGymPage = () => {
     let [allEquipments, getAllEquipments] = useState([]);
     let [gymEquipments, setGymEquipments] = useState([]);
     let [userGym, setUserGym] = useState([]);
+    let [isChecked, setIsChecked] = useState(false);
     let {authTokens, user} = useContext(AuthContext)
 
     const params = useParams();
@@ -20,6 +21,7 @@ const UserGymPage = () => {
         getUserGymData()
         getGymEquipments()
     }, [])
+
 
     let getEquipments = async() => {
         let response = await fetch('http://localhost:8000/api/user/gyms/equipments/', {
@@ -69,6 +71,25 @@ const UserGymPage = () => {
             alert('Failed to change data')
         }
     }
+    
+    let handleChange = (isChecked) => {
+        setIsChecked(isChecked);
+        shareGym(isChecked);
+      }
+      
+      let shareGym = async (isChecked) => {
+          const response = await fetch(`http://localhost:8000/api/user/gyms/${params.id}/share/`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({is_shared: isChecked})
+          });
+      
+          if (response.status === 400) {
+            alert('Failed to change data');
+          }
+      }
 
     let handleSubmit = (event) => {
         event.preventDefault();
@@ -80,39 +101,54 @@ const UserGymPage = () => {
         setGymInfo(updated_gym_equipment);
     }
 
-    return (
+
+      return (
         <div className="container-fluid">
-            <div className="row mt-3 justify-content-center">
-                <div className="col-12 text-center">
-                    <p className="h1">{userGym.gym_name}</p>
-                    <p className="h5">{userGym.address}</p>
-                    <p className="h4">Sprzęt dostępny na tej siłwoni:</p>
-                </div>
-                <div className="col-8 text-center mt-2">
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                        {allEquipments.map((eq, index) => {
-                            let found = false;
-                            for( const el of gymEquipments){
-                                if(el.equipment_id === eq.id){
-                                    found = true;
-                                    break;
-                                }}
-                                return (
-                                    <EquipmentCheckBox
-                                        eq={eq}
-                                        key={index}
-                                        initial={found}
-                                    />
-                                )
-                            })}
-                        </div>
-                        <button className="btn btn-primary" type="submit">Ustaw</button>
-                    </form>
-                </div>
+          <div className="row mt-3 justify-content-center">
+            <div className="col-12 text-center">
+              <p className="h1">{userGym.gym_name}</p>
+              <p className="h5">{userGym.address}</p>
+              <p className="h4">Sprzęt dostępny na tej siłowni:</p>
             </div>
+            <div className="col-8 text-center mt-2">
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  {allEquipments.map((eq, index) => {
+                    let found = false;
+                    for (const el of gymEquipments) {
+                      if (el.equipment_id === eq.id) {
+                        found = true;
+                        break;
+                      }
+                    }
+                    return (
+                      <EquipmentCheckBox
+                        eq={eq}
+                        key={index}
+                        initial={found}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="mb-3">
+                    <label>
+                        <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(event) => handleChange(event.target.checked)}
+                        />
+                        Udostępnij publicznie
+                    </label>
+                </div>
+
+                <button className="btn btn-primary" type="submit">
+                  Ustaw
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-    )
+      )
 }
 
 

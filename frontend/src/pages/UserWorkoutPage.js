@@ -49,6 +49,7 @@ const UserWorkoutPage = () => {
                         <table class="table table-striped">
                         <thead>
                             <tr>
+                            <th></th>
                             <th scope="col">#</th>
                             <th scope="col">Nazwa</th>
                             <th scope="col">Przyrząd</th>
@@ -58,7 +59,9 @@ const UserWorkoutPage = () => {
                         <tbody>
                             {
                                userExercises.map((el, index) => (
+                                
                                 <tr key={index}>
+                                <button class="btn btn-outline-danger btn-block btn-sm">x</button>
                                 <td>{index+1}</td>
                                 <td>{el?.exercise_name}</td>
                                 <td>{el?.equipment}</td>

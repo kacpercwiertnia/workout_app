@@ -21,6 +21,8 @@ const UserGymListPage = () => {
         getUserGymsData()
     }, [])
 
+    const navigate = useNavigate();
+
     let getUserGymsData = async() => {
         let response = await fetch('http://localhost:8000/api/user/gyms/', {
             method: 'GET',
@@ -121,7 +123,13 @@ const UserGymListPage = () => {
                         </form>
                     )}
                     </Formik>
+                    <br></br>
+                    <div className="col-12 col-md-12 ">
+                        <p className="h1 text-center">Udostępnione siłownie</p>
+                        <button className="btn btn-primary col-md-6 offset-md-3" onClick={() => navigate('/gyms/shared')}>Lista</button>
+                    </div>
                 </div>
+
             </div>
         </div>
     )
