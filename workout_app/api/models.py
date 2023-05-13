@@ -79,6 +79,10 @@ class Gyms(models.Model):
     def __str__(self):
         return self.gym_name + " " + self.address
 
+class Shared_gyms(models.Model):
+    gym_id = models.ForeignKey(Gyms, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+
 class Workouts(models.Model):
     user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
     muscle_id = models.ForeignKey(Muscles, on_delete=models.CASCADE, null=True)

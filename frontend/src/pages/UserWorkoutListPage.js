@@ -49,7 +49,7 @@ const UserWorkoutListPage = () => {
     }
 
     let getUserGymsData = async() => {
-        let response = await fetch('http://localhost:8000/api/user/gyms/', {
+        let response = await fetch('http://localhost:8000/api/user/gyms/all/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

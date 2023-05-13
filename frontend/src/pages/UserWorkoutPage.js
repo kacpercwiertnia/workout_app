@@ -38,6 +38,25 @@ const UserWorkoutPage = () => {
         setUserExercises(tmp)
     }
 
+    let changeExercise = async(values) => {
+        fetch(`http://localhost:8000/api/user/workouts/${params.id}/change/`,{
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': 'Bearer ' + String(authTokens.access)
+            },
+            body: JSON.stringify({
+                'exercise_id': values
+            })
+        }).then((res) => {
+            getWorkout();
+        })
+    }
+
+    let changeExerciseButton = (id) => {
+        changeExercise(id)
+      }
+
     return (
         <div>
             <div className="container-fluid">
@@ -58,16 +77,15 @@ const UserWorkoutPage = () => {
                         </thead>
                         <tbody>
                             {
-                               userExercises.map((el, index) => (
-                                
+                            userExercises.map((el, index) => (
                                 <tr key={index}>
-                                <button class="btn btn-outline-danger btn-block btn-sm">x</button>
+                                <button class="btn btn-outline-danger btn-block btn-sm" onClick={() => changeExerciseButton(el.id)}>x</button>
                                 <td>{index+1}</td>
                                 <td>{el?.exercise_name}</td>
                                 <td>{el?.equipment}</td>
                                 <td>{el?.description}</td>
                                 </tr>
-                            ))  
+                            ))
                             }
                         </tbody>
                         </table>

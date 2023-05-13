@@ -1,17 +1,15 @@
 import {React, useState, useEffect, useContext} from "react";
 import AuthContext from "../context/AuthContext";
 import {useParams} from 'react-router-dom';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
 import '../styles/forms.css';
 import EquipmentCheckBox from "../components/EquipmentCheckBox";
+import ShareGymCheckBox from "../components/ShareGymCheckBox";
 
 const UserGymPage = () => {
 
     let [allEquipments, getAllEquipments] = useState([]);
     let [gymEquipments, setGymEquipments] = useState([]);
     let [userGym, setUserGym] = useState([]);
-    let [isChecked, setIsChecked] = useState(false);
     let {authTokens, user} = useContext(AuthContext)
 
     const params = useParams();
@@ -71,25 +69,6 @@ const UserGymPage = () => {
             alert('Failed to change data')
         }
     }
-    
-    let handleChange = (isChecked) => {
-        setIsChecked(isChecked);
-        shareGym(isChecked);
-      }
-      
-      let shareGym = async (isChecked) => {
-          const response = await fetch(`http://localhost:8000/api/user/gyms/${params.id}/share/`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({is_shared: isChecked})
-          });
-      
-          if (response.status === 400) {
-            alert('Failed to change data');
-          }
-      }
 
     let handleSubmit = (event) => {
         event.preventDefault();
@@ -131,14 +110,10 @@ const UserGymPage = () => {
                   })}
                 </div>
                 <div className="mb-3">
-                    <label>
-                        <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(event) => handleChange(event.target.checked)}
-                        />
-                        Udostępnij publicznie
-                    </label>
+                  <ShareGymCheckBox
+                    gymid={params.id}
+                    initial={userGym.is_shared}
+                  />
                 </div>
 
                 <button className="btn btn-primary" type="submit">

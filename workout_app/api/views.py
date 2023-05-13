@@ -9,14 +9,17 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from .models import Users
 from .models import Gyms
+from .models import Shared_gyms
 from .models import Workouts
 from .models import Workout_details
 from .models import Equipments
 from .models import Gym_details
 from .models import Exercises
+from django.db.models import Q
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
+import random
 # Create your views here.
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -90,6 +93,20 @@ def getUserGyms(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def getAllUserGyms(request):
+    user = User.objects.get(username = request.user)
+    user_data = Users.objects.get(user = user)
+    user_gyms = Gyms.objects.filter(user_id=user_data.id)
+    user_gyms2 = Shared_gyms.objects.filter(user_id = user_data.id)
+    for el in user_gyms2.values():
+        gym = Gyms.objects.filter(id=el['gym_id_id'])
+        user_gyms |= gym
+    serializer = UserGymSerializer(user_gyms, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getUserGym(request, pk):
     user = User.objects.get(username = request.user)
     user_data = Users.objects.get(user = user)
@@ -137,8 +154,77 @@ def getUserWorkout(request, pk):
     for el in details.values():
         exercies = Exercises.objects.get(id = el['exercise_id_id'])
         equipment = Equipments.objects.get(equipment_name = exercies.equipment_id).equipment_name
-        data.append({'exercise_name': exercies.exercise_name, 'equipment': equipment, 'description': el['description']})
+        data.append({'exercise_name': exercies.exercise_name, 'equipment': equipment, 'description': el['description'], 'id': el['exercise_id_id']})
     return Response(data)
+
+@api_view(['GET'])
+def checkIfGymAdded(request, pk):
+    user = User.objects.get(username = request.user)
+    user2 = Users.objects.get(user = user)
+    gym = Gyms.objects.get(id = pk)
+    found = Shared_gyms.objects.filter(gym_id=gym, user_id = user2)
+
+    if(found.count() != 0):
+        return Response(True)
+    return Response(False)
+
+@api_view(['PUT', 'DELETE'])
+def addOrDeleteSharedGymToUserGyms(request, pk):
+    data = request.data
+    user = User.objects.get(id = data['user_id'])
+    user2 = Users.objects.get(user = user)
+    gym = Gyms.objects.get(id = pk)
+    found = Shared_gyms.objects.filter(gym_id=gym, user_id = user2)
+
+    if(not data['action'] and found.count() != 0):
+        found.delete()
+        return Response("Gym removed from your list")
+    elif(not data['action'] and found.count() == 0):
+        return Response("Gym is not on your list")
+    elif(data['action'] and found.count() != 0):
+        return Response("Gym is already on your list")
+    elif(data['action'] and found.count() == 0):
+        Shared_gyms.objects.create(gym_id=gym, user_id=user2)
+        return Response("Gym added to your list")
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def changeExercise(request, pk):
+    exercise_id_data = request.data.get('exercise_id')
+    current_exercises = [exercise_id_data]
+
+    user = User.objects.get(username = request.user)
+    user_data = Users.objects.get(user = user)
+    user_workout = Workouts.objects.get(id = pk, user_id=user_data.id)
+    details = Workout_details.objects.filter(workout_id = user_workout)
+    to_delete = Workout_details.objects.filter(workout_id = user_workout, exercise_id_id = exercise_id_data)
+    to_delete.delete()
+    for el in details.values():
+        current_exercises.append(el['exercise_id_id'])
+
+    muscle = Muscles.objects.get(id = user_workout.muscle_id.id)
+    gym = Gyms.objects.get(id = user_workout.gym_id.id)
+    user_exp = user_data.experience
+    gym_equpiment = Gym_details.objects.filter(gym_id = gym).values()
+    potential_workout = []
+    for el in gym_equpiment:
+        equipment = Equipments.objects.get(id = el['equipment_id_id'])
+        exercise = Exercises.objects.filter(equipment_id = equipment, muscle_id = muscle, difficulty = user_exp)
+        if exercise.count() >= 1:
+            for el2 in  exercise.values():
+                exer = Exercises.objects.get(id = el2['id'])
+                desc = el2['description']
+                potential_workout.append({'exercise_id': exer, 'description': desc})
+    if len(potential_workout) > 5:
+        while True:
+            candidate_number = random.randint(0, len(potential_workout)-1)
+            candidate = potential_workout[candidate_number]
+            if candidate['exercise_id'].id not in current_exercises:
+                Workout_details.objects.create(workout_id = user_workout, exercise_id = candidate['exercise_id'], description = candidate['description'])
+                break
+        return Response("Exercise has been changed!")
+    else:
+        return Response("Can't cahnge the exercise!")
 
 @api_view(['PUT'])
 def UpdateUserView(request,pk):
@@ -191,7 +277,9 @@ def ShareGym(request, pk):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def GetSharedGyms(request):
-    shared_gyms = Gyms.objects.filter(is_shared=True)
+    user = User.objects.get(username = request.user)
+    user2 = Users.objects.get(user = user)
+    shared_gyms = Gyms.objects.filter(~Q(user_id=user2, is_shared=True) )
     public_gyms = []
     for el in shared_gyms.values():
         public_gyms.append({'id': el['id'], 'name': el['gym_name'], 'addres': el['address']})
@@ -228,17 +316,26 @@ def CreateUserWorkout(request):
                 exer = Exercises.objects.get(id = el2['id'])
                 desc = el2['description']
                 potential_workout.append({'exercise_id': exer, 'description': desc})
-    print(len(potential_workout))
+                
+
     if len(potential_workout) < 3:
         return Response("Nie udało się utworzyć treningu przy podanej specyfikacji!")
 
     new_workout = Workouts.objects.create(user_id = user_data, muscle_id = muscle, gym_id = gym, date = data['date'])
     i = 0
-    
-    for el in potential_workout:
-        if i == 5:
-            break
-        Workout_details.objects.create(workout_id = new_workout, exercise_id = el['exercise_id'], description = el['description'])
-        i+=1
+
+    random_indexes = list(range(len(potential_workout)))
+    if len(potential_workout) > 5:
+        random_exercises = random.sample(random_indexes, 5) #5 jest maksymalną ilością cwiczeń w zestawie
+        for el in random_exercises:
+            record = potential_workout[el]
+            Workout_details.objects.create(workout_id = new_workout, exercise_id = record['exercise_id'], description = record['description'])
+    else:
+        for el in potential_workout:
+            if i == 5:
+                break
+            Workout_details.objects.create(workout_id = new_workout, exercise_id = el['exercise_id'], description = el['description'])
+            i+=1
+
     
     return Response("Trening został uwtorzony")
