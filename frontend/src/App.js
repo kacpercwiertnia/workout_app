@@ -15,6 +15,7 @@ import UserGymPage from './pages/UserGymPage';
 import UserWorkoutPage from './pages/UserWorkoutPage';
 import PublicGyms from './pages/PublicGyms';
 import PublicGymPage from './pages/PublicGymPage';
+import DoneWorkoutPage from './pages/DoneWorkoutPage';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           </Route>
           <Route path='/workouts/:id' element={<FormRoute/>}>
             <Route path='/workouts/:id' element={<UserWorkoutPage />}/>
+            <Route path='/workouts/:id/done' element={<DoneWorkoutPage />}/>
           </Route>
           <Route path='/login' element={<UnauthRoute/>}>
             <Route path='/login' element={<LoginPage/>}/>

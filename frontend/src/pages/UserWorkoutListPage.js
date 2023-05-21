@@ -18,6 +18,7 @@ const validationSchema = Yup.object().shape({
 
 const UserWorkoutListPage = () => {
     let [userWorkouts, setUserWorkouts] = useState([]);
+    let [userPastWorkouts, setPastUserWorkouts] = useState([]);
     let {authTokens} = useContext(AuthContext)
     let [muscles, setMuscles] = useState([]);
     let [userGyms, setUserGyms] = useState([]);
@@ -37,8 +38,17 @@ const UserWorkoutListPage = () => {
             }
         })
         let data = await response.json()
-        data.sort((a,b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
-        setUserWorkouts(data)
+        let currentDate = new Date();
+
+        let filteredData = data.filter(item => new Date(item.date) >= currentDate);
+        let filteredPastData = data.filter(item => new Date(item.date) < currentDate);
+        
+        filteredData.sort((a, b) => (new Date(a.date) > new Date(b.date)) ? 1 : ((new Date(b.date) > new Date(a.date)) ? -1 : 0));
+        filteredPastData.sort((a, b) => (new Date(a.date) > new Date(b.date)) ? 1 : ((new Date(b.date) > new Date(a.date)) ? -1 : 0));
+
+        setUserWorkouts(filteredData);
+        setPastUserWorkouts(filteredPastData);
+        
     }
 
     let getMuscles = async () => {
@@ -94,6 +104,7 @@ const UserWorkoutListPage = () => {
                     ))}
                     </div>
                 </div>
+
                 <div className="col-12 col-md-6">
                 <p className="h1 text-center">Zaplanuj nowy trening</p>
                     <Formik
@@ -166,6 +177,20 @@ const UserWorkoutListPage = () => {
                     )}
                     </Formik>
                 </div>
+            </div>
+            <div className="col-12 col-md-6 text-center">
+                <p className="h1">Odbyte treningi</p>
+                <div className="row">
+                    {userPastWorkouts.map((workout, index) => (
+                    <div key={index} className="text-center col-12 col-sm-6 col-md-4 my-2 py-3 bg-light border">
+                        <NavLink to={'/workouts/'+workout.id+'/done/'} className="nav-link">
+                        <p className="h2">{workout.muscle}</p>
+                        <p className="h4">{workout.gym}</p>
+                        <p>{workout.date}</p>
+                        </NavLink>
+                    </div>
+                    ))}
+                    </div>
             </div>
         </div>
     )
