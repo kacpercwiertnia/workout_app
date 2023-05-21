@@ -154,7 +154,7 @@ def getUserWorkout(request, pk):
     for el in details.values():
         exercies = Exercises.objects.get(id = el['exercise_id_id'])
         equipment = Equipments.objects.get(equipment_name = exercies.equipment_id).equipment_name
-        data.append({'exercise_name': exercies.exercise_name, 'equipment': equipment, 'description': el['description'], 'id': el['exercise_id_id']})
+        data.append({'exercise_name': exercies.exercise_name, 'equipment': equipment, 'description': el['description'], 'id': el['exercise_id_id'], 'weight': el['weight'], 'gdID': el ['id']})
     return Response(data)
 
 @api_view(['GET'])
@@ -220,7 +220,7 @@ def changeExercise(request, pk):
             candidate_number = random.randint(0, len(potential_workout)-1)
             candidate = potential_workout[candidate_number]
             if candidate['exercise_id'].id not in current_exercises:
-                Workout_details.objects.create(workout_id = user_workout, exercise_id = candidate['exercise_id'], description = candidate['description'])
+                Workout_details.objects.create(workout_id = user_workout, exercise_id = candidate['exercise_id'], description = candidate['description'], weight = 0)
                 break
         return Response("Exercise has been changed!")
     else:
@@ -235,6 +235,21 @@ def UpdateUserView(request,pk):
         serializer.save()
     
     return Response(serializer.data)
+
+@api_view(['PUT'])
+def changeWeights(request,pk):
+    user = Users.objects.get(id=pk)
+    gym_detail_id = request.data['gym_details_id']
+    gym_detail = Workout_details.objects.get(id=gym_detail_id)
+
+    gym_detail.weight = request.data['weight']
+    gym_detail.save()
+
+
+
+    return Response("Weight has been changed!")
+
+
 
 @api_view(['PUT', 'DELETE']) 
 def UpdateUserGym(request,pk):

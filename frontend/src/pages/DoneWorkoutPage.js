@@ -25,7 +25,6 @@ const DoneWorkoutPage = () => {
         })
         let data = await response.json()
         setUserWorkout(data)
-        console.log(data)
         let i = 0;
         let tmp = []
         for(const el of data){
@@ -34,9 +33,25 @@ const DoneWorkoutPage = () => {
             }
             i++;
         }
-        console.log(tmp)
         setUserExercises(tmp)
     }
+
+    let handleInputChange = async (event, id) => {
+        fetch(`http://localhost:8000/api/user/workouts/${params.id}/changeWeight/`, {
+          method: 'PUT',
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ' + String(authTokens.access)
+          },
+          body: JSON.stringify({
+            'weight': event.target.value,
+            'gym_details_id': id
+          })
+        }).then((res) => {
+          getWorkout();
+        });
+      };
+      
 
     return (
         <div>
@@ -64,7 +79,11 @@ const DoneWorkoutPage = () => {
                                 <td>{el?.exercise_name}</td>
                                 <td>{el?.equipment}</td>
                                 <input
-                                type="text"></input>
+                                    type="text"
+                                    onChange={(event) => handleInputChange(event, el.gdID)}
+                                    defaultValue={el?.weight}
+                                    className="form-control text-center col-sm-6"
+                                    />
                                 </tr>
                             ))
                             }

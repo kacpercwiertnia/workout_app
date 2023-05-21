@@ -98,4 +98,4 @@ class Workout_details(models.Model):
     workout_id = models.ForeignKey(Workouts, on_delete=models.CASCADE)
     exercise_id = models.ForeignKey(Exercises, on_delete=models.CASCADE)
     description = models.TextField(max_length=1000)
-    weight = models.IntegerField(default=0)
+    weight = models.IntegerField()
