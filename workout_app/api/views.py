@@ -344,12 +344,12 @@ def CreateUserWorkout(request):
         random_exercises = random.sample(random_indexes, 5) #5 jest maksymalną ilością cwiczeń w zestawie
         for el in random_exercises:
             record = potential_workout[el]
-            Workout_details.objects.create(workout_id = new_workout, exercise_id = record['exercise_id'], description = record['description'])
+            Workout_details.objects.create(workout_id = new_workout, exercise_id = record['exercise_id'], description = record['description'], weight = 0)
     else:
         for el in potential_workout:
             if i == 5:
                 break
-            Workout_details.objects.create(workout_id = new_workout, exercise_id = el['exercise_id'], description = el['description'])
+            Workout_details.objects.create(workout_id = new_workout, exercise_id = el['exercise_id'], description = el['description'], weight = 0)
             i+=1
 
     
